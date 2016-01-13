@@ -1,0 +1,18 @@
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in SMILExtract : openSMILE starting!
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in SMILExtract : config file is: config/gemaps/GeMAPSv01a.conf
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in cComponentManager : successfully registered 99 component types.
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in instance 'gemapsv01a_logSpectral' : logSpecFloor = -140.00  (specFloor = 1.000000e-14)
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in instance 'lldsink' : No filename given, disabling this sink component.
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in instance 'lldhtksink' : No filename given, disabling this sink component.
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in instance 'csvsink' : No filename given, disabling this sink component.
+[ 06.11.2015 - 00:49:00 ]
+    (MSG) [2] in instance 'htksink' : No filename given, disabling this sink component.
+[ 06.11.2015 - 00:49:00 ]
+    (ERROR) [1] in cWaveSource : failed to open input file '/Users/callumc/Desktop/Uni/Project/vocalizationcorpus/newData//Users/callumc/Desktop/Uni/Project/vocalizationcorpus/newData'
