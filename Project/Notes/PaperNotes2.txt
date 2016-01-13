@@ -1,0 +1,34 @@
+Notes
+-----
+
+> Intensity (loudness)
+> F0 (Fundamental Frequency) mean
+> Variability
+> Range
+> High Frequency Content / Energy of speech
+
+
+"Findings confirm that paramters related to F0 and spectral distribution are important cues to affective speech content"
+
+"More recently, amplitude, pitch & spectral profile (tilt, balance, distribution)"
+
+"It is show there, that spectral flux has the overall best corelation for a single feature" [related to arousal?]
+
+What are cepstral parameters? (Mel-Frequency-Cepstral-Coefficients - MFCC)
+
+Paralinguistic?
+
+((Why the parameters were chosen))
+1) the potential of an acoustic parameter to index physiological changes in voice production during affective processes
+2) the frequency and success with which the parameter has been used in the past literature
+3) its theoretical significance.
+
+
+Discrete Cosine Transformation?
+
+
+Minimalistic Paramter Set (See MPS.txt)
+
+Harmonic?
+Formant?
+Individual Pitch Periods?

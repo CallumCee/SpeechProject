@@ -1,0 +1,14 @@
+AI LAB - START OF SECTION 2
+---------------------------
+
+ALWAYS USE THE RECTANGLUAR WINDOW (between 10-30 ms)
+
+SMILExtract −C c o n f i g /demo/demo1\ e n e r g y . c o n f −I wav\ s am pl e s / speech 0 1 .
+wav −O speech 0 1 . ene r g y . c s v
+
+
+SMILExtract -C config/demo/demo1\energyV2.conf -I wav\samples/speech01.wav -O speech01_energy.csv
+
+SMILExtract -C config/IS12_speaker_trait_compat.conf -I /Users/callumc/Desktop/testinput.wav -O myconfig/testinput_IS12compat.csv
+
+geMAPS minimalistic
