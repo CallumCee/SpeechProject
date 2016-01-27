@@ -1,0 +1,4 @@
+Further Analysis:
+
+Split by male,female,speaker
+find median,mean
