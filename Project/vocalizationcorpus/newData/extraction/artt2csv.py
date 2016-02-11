@@ -23,8 +23,10 @@ for line in dataFile:
 
 dataFile.close()
 
-
-myValues = rawValues.split(',')
+try:
+	myValues = rawValues.split(',')
+except:
+	print fileString
 
 newString = fileString[:-7]
 newString = newString + 'gdata'

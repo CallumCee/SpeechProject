@@ -5,9 +5,11 @@ def cutWaveFile(row, instance, timeA, timeB, masterWave):
 	#Name of the wav file to edit
 		fileFind = 'data/' + row[0] + '.wav'
 
+		#Caller/Reciever & Person ID
+		roleInfo = '_' + row[1][1:3] + row[1][4]
 		#Name of the wav file to be created
 		#((File name + Gender letter + Instance))
-		fileWrite = 'newData/' + row[0] + row[2][0] + str(instance) + '.wav'
+		fileWrite = 'newData/' + row[0] + row[2][0] + roleInfo + str(instance) + '.wav'
 		curWave = wave.open(fileFind, 'rb')
 		newWave = wave.open(fileWrite, 'wb')
 

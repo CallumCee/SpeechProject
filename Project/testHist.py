@@ -20,7 +20,7 @@ import glob
 import math
 import numpy
 
-tagFile = open('/Users/callumc/Desktop/Uni/Project/tagList.txt', 'r')
+tagFile = open('/Users/callumc/SpeechProject/Project/tagList.txt', 'r')
 tagList = []
 maleList = []
 femaleList = []
@@ -53,7 +53,7 @@ for tag in tagFile:
 tagFile.close()
 
 
-fileNames = glob.glob("/Users/callumc/Desktop/Uni/Project/vocalizationcorpus/newData/extraction/gdata/*.gdata")
+fileNames = glob.glob("/Users/callumc/SpeechProject/Project/vocalizationcorpus/newData/extraction/gdata/*.gdata")
 
 #Process a single file at a time
 #Splitting all extracted values at a time in nested loop
@@ -61,7 +61,7 @@ for curFile in fileNames:
 	#Gender check
 	isMale = True;
 	#Check if male or female
-	if (curFile[-8:-7] == "F"):
+	if (curFile[-12:-11] == "F"):
 		isMale = False;
 	else:
 		isMale = True;
@@ -73,6 +73,10 @@ for curFile in fileNames:
 	i=0
 	while i < 62:
 		curLine = dataFile.readline()
+
+		if (curLine == ''):
+			break
+
 		curLine = curLine.split(',')
 		curLine[1] = curLine[1].rstrip('\n')
 
@@ -100,6 +104,7 @@ for curFile in fileNames:
 		i = i + 1
 
 dataFile.close()
+
 
 #Does ANOVA statistical analysis
 def signStats(male, female, all):
@@ -134,6 +139,8 @@ def mainMenu():
 
 		if userChoice == "feat":
 			featureList()
+		elif userChoice == "devstats":
+			statsToCSV()
 
 	if (userChoice == "exit"):
 		exit()
@@ -246,6 +253,55 @@ def basicStats(graphNumber, dataChoice):
 	print ""
 
 	return
+
+def statsToCSV():
+	outFile = open('/Users/callumc/SpeechProject/Project/groupedstatistics.csv', 'w')
+
+	headerLine = 'extracted_feature, male_mean, female_mean, all_mean, male_median, female_median, all_median,' \
+					' male_variance, female_variance, all_variance, male_stdev, female_stdev, all_stdev,' \
+					' anova_Fval, anova_Fcrit5, anova_Pval'
+
+	headerLine += '\n'
+
+	outFile.write(headerLine)
+
+	i=0
+	while (i < 62):
+		#extracted_feature
+		lineOut = tagList[i][0]
+		#means
+		lineOut += ", " + str(np.mean(maleList[i][1]))
+		lineOut += ", " + str(np.mean(femaleList[i][1]))
+		lineOut += ", " + str(np.mean(tagList[i][1]))
+		#medians
+		lineOut += ", " + str(np.median(maleList[i][1]))
+		lineOut += ", " + str(np.median(femaleList[i][1]))
+		lineOut += ", " + str(np.median(tagList[i][1]))
+		#variances
+		lineOut += ", " + str(np.var(maleList[i][1]))
+		lineOut += ", " + str(np.var(femaleList[i][1]))
+		lineOut += ", " + str(np.var(tagList[i][1]))
+		#standard deviations
+		lineOut += ", " + str(np.std(maleList[i][1]))
+		lineOut += ", " + str(np.std(femaleList[i][1]))
+		lineOut += ", " + str(np.std(tagList[i][1]))
+		#anova calculations
+		signData = signStats(maleList[i][1], femaleList[i][1], tagList[i][1])
+		#anova F value
+		lineOut += ", " + str(signData[0])
+		#anova F critical value
+		lineOut += ", " + str(signData[2])
+		#anova P value
+		lineOut += ", " + str(signData[1])
+
+		#newline char
+		lineOut += '\n'
+
+		outFile.write(lineOut)
+		i = i + 1
+	return
+
+	outFile.close()
 
 mainMenu()
 exit()
