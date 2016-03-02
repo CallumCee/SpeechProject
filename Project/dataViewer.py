@@ -20,10 +20,13 @@ import glob
 import math
 import numpy
 
+#Read from static tag file
 tagFile = open('/Users/callumc/SpeechProject/Project/tagList.txt', 'r')
 tagList = []
 maleList = []
 femaleList = []
+callerList = []
+receiverList = []
 
 #Template for data storage
 for tag in tagFile:
@@ -31,24 +34,35 @@ for tag in tagFile:
 	tagStoreMASTER = []
 	tagStoreMALE = []
 	tagStoreFEMALE = []
+	tagStoreCALLER = []
+	tagStoreRECEIVER = []
 	#Will store all data for said tag
 	dataStoreMASTER = []
 	dataStoreMALE = []
 	dataStoreFEMALE = []
+	dataStoreCALLER = []
+	dataStoreRECEIVER = []
 	#Strips newline chars
 	tagFinal = tag.rstrip('\n')
 
+	#Store in correct form
 	tagStoreMASTER.append(tagFinal)
 	tagStoreMASTER.append(dataStoreMASTER)
 	tagStoreMALE.append(tagFinal)
 	tagStoreMALE.append(dataStoreMALE)
 	tagStoreFEMALE.append(tagFinal)
 	tagStoreFEMALE.append(dataStoreFEMALE)
+	tagStoreCALLER.append(tagFinal)
+	tagStoreCALLER.append(dataStoreCALLER)
+	tagStoreRECEIVER.append(tagFinal)
+	tagStoreRECEIVER.append(dataStoreRECEIVER)
 
 	#Save this template into each list
 	tagList.append(tagStoreMASTER)
 	maleList.append(tagStoreMALE)
 	femaleList.append(tagStoreFEMALE)
+	callerList.append(tagStoreCALLER)
+	receiverList.append(tagStoreRECEIVER)
 
 tagFile.close()
 
@@ -65,6 +79,13 @@ for curFile in fileNames:
 		isMale = False;
 	else:
 		isMale = True;
+
+	#Caller/Receiver check
+	isCaller = True;
+	if (curFile[-8:-7] == "R"):
+		isCaller = False;
+	else:
+		isCaller = True;
 
 	#Open the file
 	dataFile = open(curFile, 'r')
@@ -95,11 +116,18 @@ for curFile in fileNames:
 
 		#Add to master list
 		tagList[i][1].append(calculatedNumber)
+
 		#Add to male/female list
 		if (isMale == True):
 			maleList[i][1].append(calculatedNumber)
 		else:
 			femaleList[i][1].append(calculatedNumber)
+
+		#Add to caller/receiver list
+		if (isCaller == True):
+			callerList[i][1].append(calculatedNumber)
+		else:
+			receiverList[i][1].append(calculatedNumber)
 
 		i = i + 1
 
@@ -107,11 +135,11 @@ dataFile.close()
 
 
 #Does ANOVA statistical analysis
-def signStats(male, female, all):
+def signStats(d1, d2, all):
 	#Return list where (F Value, P Value, F Critical)
 	statOutList = []
 
-	fVal, pVal = spstats.f_oneway(male, female)
+	fVal, pVal = spstats.f_oneway(d1, d2)
 	fCrit = spstats.distributions.f.ppf(0.95 , 1, len(all)) #0.95 = when 0.05p
 
 	statOutList.append(fVal)
@@ -139,8 +167,10 @@ def mainMenu():
 
 		if userChoice == "feat":
 			featureList()
-		elif userChoice == "devstats":
-			statsToCSV()
+		elif userChoice == "devstatsgender":
+			statsToCSV("gender")
+		elif userChoice == "devstatscaller":
+			statsToCSV("caller")
 
 	if (userChoice == "exit"):
 		exit()
@@ -161,11 +191,14 @@ def featureList():
 	advFeatureChoice(currentGraphNumber)
 	return
 
+#Grouping data and obtaining stats/histogram
 def advFeatureChoice(graphNumber):
 	print ""
+	print "Type 'all' to display data from all participants"
 	print "Type 'male' to display only data from male participants"
 	print "Type 'female' to display only data from female participants"
-	print "Type 'all' to display data from all participants"
+	print "Type 'caller' to display data from caller participants"
+	print "Type 'receiver' to display data from receiver participants"
 	userChoiceDataSet = raw_input("#")
 
 	userChoiceFunction = ""
@@ -185,15 +218,25 @@ def advFeatureChoice(graphNumber):
 	mainMenu()
 	return
 
+#Creates the histogram to display
 def drawHist(graphNumber, dataChoice):
 
 	#data
 	if dataChoice == "male":
 		graphData = maleList[graphNumber]
+		print 'Male data selected'
 	elif dataChoice == "female":
 		graphData = femaleList[graphNumber]
+		print 'Female data selected'
+	elif dataChoice == "caller":
+		graphData = callerList[graphNumber]
+		print 'Caller data selected'
+	elif dataChoice == "receiver":
+		graphData = receiverList[graphNumber]
+		print 'Receiver data selected'
 	else:
 		graphData = tagList[graphNumber]
+		print 'All data selected'
 
 
 	# mean of distribution
@@ -223,6 +266,7 @@ def drawHist(graphNumber, dataChoice):
 	plt.show()
 	return
 
+#Produces some statistics for the given data set
 def basicStats(graphNumber, dataChoice):
 	stringTitle = ""
 	#data
@@ -232,6 +276,12 @@ def basicStats(graphNumber, dataChoice):
 	elif dataChoice == "female":
 		graphData = femaleList[graphNumber]
 		stringTitle = "Female Data"
+	elif dataChoice == "caller":
+		graphData = callerList[graphNumber]
+		stringTitle = "Caller Data"
+	elif dataChoice == "receiver":
+		graphData = receiverList[graphNumber]
+		stringTitle = "Receiver Data"
 	else:
 		graphData = tagList[graphNumber]
 		stringTitle = "All Data"
@@ -254,11 +304,24 @@ def basicStats(graphNumber, dataChoice):
 
 	return
 
-def statsToCSV():
-	outFile = open('/Users/callumc/SpeechProject/Project/groupedstatistics.csv', 'w')
+#Output data set stats to a CSV file
+def statsToCSV(datatype):
+	#Set up the type of out
+	if (datatype == "gender"):
+		a = "male"
+		b = "female"
+		aList = maleList
+		bList = femaleList
+	else:
+		a = "caller"
+		b = "receiver"
+		aList = callerList
+		bList = receiverList
 
-	headerLine = 'extracted_feature, male_mean, female_mean, all_mean, male_median, female_median, all_median,' \
-					' male_variance, female_variance, all_variance, male_stdev, female_stdev, all_stdev,' \
+	outFile = open('/Users/callumc/SpeechProject/Project/stats' + a + b + '.csv', 'w')
+
+	headerLine = 'extracted_feature, '+a+'_mean, '+b+'_mean, all_mean, '+a+'_median, '+b+'_median, all_median,' \
+					' '+a+'_variance, '+b+'_variance, all_variance, '+a+'_stdev, '+b+'_stdev, all_stdev,' \
 					' anova_Fval, anova_Fcrit5, anova_Pval'
 
 	headerLine += '\n'
@@ -270,23 +333,23 @@ def statsToCSV():
 		#extracted_feature
 		lineOut = tagList[i][0]
 		#means
-		lineOut += ", " + str(np.mean(maleList[i][1]))
-		lineOut += ", " + str(np.mean(femaleList[i][1]))
+		lineOut += ", " + str(np.mean(aList[i][1]))
+		lineOut += ", " + str(np.mean(bList[i][1]))
 		lineOut += ", " + str(np.mean(tagList[i][1]))
 		#medians
-		lineOut += ", " + str(np.median(maleList[i][1]))
-		lineOut += ", " + str(np.median(femaleList[i][1]))
+		lineOut += ", " + str(np.median(aList[i][1]))
+		lineOut += ", " + str(np.median(bList[i][1]))
 		lineOut += ", " + str(np.median(tagList[i][1]))
 		#variances
-		lineOut += ", " + str(np.var(maleList[i][1]))
-		lineOut += ", " + str(np.var(femaleList[i][1]))
+		lineOut += ", " + str(np.var(aList[i][1]))
+		lineOut += ", " + str(np.var(bList[i][1]))
 		lineOut += ", " + str(np.var(tagList[i][1]))
 		#standard deviations
-		lineOut += ", " + str(np.std(maleList[i][1]))
-		lineOut += ", " + str(np.std(femaleList[i][1]))
+		lineOut += ", " + str(np.std(aList[i][1]))
+		lineOut += ", " + str(np.std(bList[i][1]))
 		lineOut += ", " + str(np.std(tagList[i][1]))
 		#anova calculations
-		signData = signStats(maleList[i][1], femaleList[i][1], tagList[i][1])
+		signData = signStats(aList[i][1], bList[i][1], tagList[i][1])
 		#anova F value
 		lineOut += ", " + str(signData[0])
 		#anova F critical value
@@ -299,9 +362,9 @@ def statsToCSV():
 
 		outFile.write(lineOut)
 		i = i + 1
-	return
 
 	outFile.close()
+	return
 
 mainMenu()
 exit()
