@@ -19,6 +19,7 @@ import csv
 import glob
 import math
 import numpy
+import personalityRead as pRead
 
 #Read from static tag file
 tagFile = open('/Users/callumc/SpeechProject/Project/tagList.txt', 'r')
@@ -27,6 +28,8 @@ maleList = []
 femaleList = []
 callerList = []
 receiverList = []
+
+OENAC = pRead.getOENAC()
 
 #Template for data storage
 for tag in tagFile:
