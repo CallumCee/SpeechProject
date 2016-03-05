@@ -21,121 +21,6 @@ import math
 import numpy
 import personalityRead as pRead
 
-#Read from static tag file
-tagFile = open('/Users/callumc/SpeechProject/Project/tagList.txt', 'r')
-tagList = []
-maleList = []
-femaleList = []
-callerList = []
-receiverList = []
-
-OENAC = pRead.getOENAC()
-
-#Template for data storage
-for tag in tagFile:
-	#Stores tag and it's bin
-	tagStoreMASTER = []
-	tagStoreMALE = []
-	tagStoreFEMALE = []
-	tagStoreCALLER = []
-	tagStoreRECEIVER = []
-	#Will store all data for said tag
-	dataStoreMASTER = []
-	dataStoreMALE = []
-	dataStoreFEMALE = []
-	dataStoreCALLER = []
-	dataStoreRECEIVER = []
-	#Strips newline chars
-	tagFinal = tag.rstrip('\n')
-
-	#Store in correct form
-	tagStoreMASTER.append(tagFinal)
-	tagStoreMASTER.append(dataStoreMASTER)
-	tagStoreMALE.append(tagFinal)
-	tagStoreMALE.append(dataStoreMALE)
-	tagStoreFEMALE.append(tagFinal)
-	tagStoreFEMALE.append(dataStoreFEMALE)
-	tagStoreCALLER.append(tagFinal)
-	tagStoreCALLER.append(dataStoreCALLER)
-	tagStoreRECEIVER.append(tagFinal)
-	tagStoreRECEIVER.append(dataStoreRECEIVER)
-
-	#Save this template into each list
-	tagList.append(tagStoreMASTER)
-	maleList.append(tagStoreMALE)
-	femaleList.append(tagStoreFEMALE)
-	callerList.append(tagStoreCALLER)
-	receiverList.append(tagStoreRECEIVER)
-
-tagFile.close()
-
-
-fileNames = glob.glob("/Users/callumc/SpeechProject/Project/vocalizationcorpus/newData/extraction/gdata/*.gdata")
-
-#Process a single file at a time
-#Splitting all extracted values at a time in nested loop
-for curFile in fileNames:
-	#Gender check
-	isMale = True;
-	#Check if male or female
-	if (curFile[-12:-11] == "F"):
-		isMale = False;
-	else:
-		isMale = True;
-
-	#Caller/Receiver check
-	isCaller = True;
-	if (curFile[-8:-7] == "R"):
-		isCaller = False;
-	else:
-		isCaller = True;
-
-	#Open the file
-	dataFile = open(curFile, 'r')
-	#Skip the first line (headers)
-	dataFile.readline()
-	i=0
-	while i < 62:
-		curLine = dataFile.readline()
-
-		if (curLine == ''):
-			break
-
-		curLine = curLine.split(',')
-		curLine[1] = curLine[1].rstrip('\n')
-
-		if curLine[1] == 'nan':
-			i = i + 1
-			continue
-
-		#split by e to calculate actual value
-		numberCalc = curLine[1].split('e')
-		numberCalc[0] = float(numberCalc[0])
-		numberCalc[1] = float(numberCalc[1])
-
-		calculatedPower = math.pow(10,numberCalc[1])
-		calculatedNumber = numberCalc[0]*calculatedPower
-
-
-		#Add to master list
-		tagList[i][1].append(calculatedNumber)
-
-		#Add to male/female list
-		if (isMale == True):
-			maleList[i][1].append(calculatedNumber)
-		else:
-			femaleList[i][1].append(calculatedNumber)
-
-		#Add to caller/receiver list
-		if (isCaller == True):
-			callerList[i][1].append(calculatedNumber)
-		else:
-			receiverList[i][1].append(calculatedNumber)
-
-		i = i + 1
-
-dataFile.close()
-
 
 #Does ANOVA statistical analysis
 def signStats(d1, d2, all):
@@ -164,6 +49,10 @@ def mainMenu():
 		print "~+~+~+~+~+~+~+~+~+~+~+~+~+~+"
 		print "Type 'feat' to select from the feature list"
 		print "Type 'exit' to exit the program"
+		print "~+~+~+~+~+~+~+~+~+~+~+~+~+~+"
+		print "Type 'devstatsgender' for analysis csv output (gender focus)"
+		print "Type 'devstatscaller' for analysis csv output (caller/receiver focus)"
+		print "Type 'devstatsfinal' for analysis csv output (OENAC final)"
 		print ""
 
 		userChoice = raw_input("#")
@@ -174,6 +63,8 @@ def mainMenu():
 			statsToCSV("gender")
 		elif userChoice == "devstatscaller":
 			statsToCSV("caller")
+		elif userChoice == "devstatsfinal":
+			createMasterCSV()
 
 	if (userChoice == "exit"):
 		exit()
@@ -367,7 +258,315 @@ def statsToCSV(datatype):
 		i = i + 1
 
 	outFile.close()
+	print 'Created CSV for ' + datatype
 	return
+
+#For main CSV output, checks if the p value is significant
+def outputSignificance(pdata):
+	outstring = ""
+	if (pdata <= 0.05):
+			outstring = "*"
+	if (pdata <= 0.01):
+			outstring = "**"
+	return outstring
+
+#Outputs the main CSV for final analysis
+def createMasterCSV():
+	outFile = open('/Users/callumc/SpeechProject/Project/completedData.csv', 'w')
+
+	headerLine = 'extracted_feature, gender_anova_Fval, gender_anova_Pval, call-rece_anova_Fval, call-rece_anova_Pval, ' \
+					'O_anova_Fval, O_anova_Pval, E_anova_Fval, E_anova_Pval, N_anova_Fval, N_anova_Pval, ' \
+					'A_anova_Fval, A_anova_Pval, C_anova_Fval, C_anova_Pval'
+
+	headerLine += '\n'
+
+	outFile.write(headerLine)
+
+	i=0
+	while (i < 62):
+		#extracted_feature
+		lineOut = tagList[i][0]
+
+		#gender vals
+		genderData = signStats(maleList[i][1], femaleList[i][1], tagList[i][1])
+		lineOut += ", " + str(genderData[0]) #Fval
+		lineOut += ", " + str(genderData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(genderData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#call-rece vals
+		callreceData = signStats(callerList[i][1], receiverList[i][1], tagList[i][1])
+		lineOut += ", " + str(callreceData[0]) #Fval
+		lineOut += ", " + str(callreceData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(callreceData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#OENAC vals
+		#Openness
+		OData = signStats(upperOList[i][1], lowerOList[i][1], tagList[i][1])
+		lineOut += ", " + str(OData[0]) #Fval
+		lineOut += ", " + str(OData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(OData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Extraversion
+		EData = signStats(upperEList[i][1], lowerEList[i][1], tagList[i][1])
+		lineOut += ", " + str(EData[0]) #Fval
+		lineOut += ", " + str(EData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(EData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Neuroticism
+		NData = signStats(upperNList[i][1], lowerNList[i][1], tagList[i][1])
+		lineOut += ", " + str(NData[0]) #Fval
+		lineOut += ", " + str(NData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(NData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Agreeableness
+		AData = signStats(upperAList[i][1], lowerAList[i][1], tagList[i][1])
+		lineOut += ", " + str(AData[0]) #Fval
+		lineOut += ", " + str(AData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(AData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Concientiousness
+		CData = signStats(upperCList[i][1], lowerCList[i][1], tagList[i][1])
+		lineOut += ", " + str(CData[0]) #Fval
+		lineOut += ", " + str(CData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(CData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#newline char
+		lineOut += '\n'
+
+		outFile.write(lineOut)
+		i = i + 1
+
+	outFile.close()
+	print 'Created CSV for OENAC (final)'
+	return
+
+#Creates a tag & data storage lists
+def dataStoreFactory(tag):
+	tagStore = []
+	dataStore = []
+
+	tagStore.append(tag.rstrip('\n'))
+	tagStore.append(dataStore)
+
+	return tagStore
+
+#Checks if filename matches the given string to see if data belongs to a group
+def checkMembership(position, matchCheck, checkType):
+	isMember = True
+
+	#checkType 0 is a string match, 1 is for a 'in list check'
+	if (checkType == 0):
+		if (position == matchCheck):
+			isMember = False
+	else:
+		if (position in matchCheck):
+			isMember = False
+
+	return isMember
+
+#Adds the data to locA/locB depending on isMember
+def dataToList(isMember, locA, locB, num):
+	if (isMember == True):
+		locA.append(num)
+	else:
+		locB.append(num)
+
+	return
+
+'''
+START:	> READ TAG FILE TO OBTAIN FEATURE NAMES
+		> CREATE DATA STORAGE BINS FOR EACH ANALYSIS CASE
+'''
+#Read from static tag file
+tagFile = open('/Users/callumc/SpeechProject/Project/tagList.txt', 'r')
+tagList = []
+#Gender
+maleList = []
+femaleList = []
+#Caller/Receiver
+callerList = []
+receiverList = []
+#OENAC
+upperOList = []
+lowerOList = []
+upperEList = []
+lowerEList = []
+upperNList = []
+lowerNList = []
+upperAList = []
+lowerAList = []
+upperCList = []
+lowerCList = []
+
+#Import Personality OENAC data from file using personalityRead.py
+OENACsort = pRead.getOENAC()
+
+#Template for data storage
+for tag in tagFile:
+	#Stores the tag of the feature and it's data storage bin
+	#Master
+	tagStoreMASTER = dataStoreFactory(tag)
+	#Gender
+	tagStoreMALE = dataStoreFactory(tag)
+	tagStoreFEMALE = dataStoreFactory(tag)
+	#Caller/Receiver
+	tagStoreCALLER = dataStoreFactory(tag)
+	tagStoreRECEIVER = dataStoreFactory(tag)
+	#OENAC
+	tagStoreUpperO = dataStoreFactory(tag)
+	tagStoreLowerO = dataStoreFactory(tag)
+	tagStoreUpperE = dataStoreFactory(tag)
+	tagStoreLowerE = dataStoreFactory(tag)
+	tagStoreUpperN = dataStoreFactory(tag)
+	tagStoreLowerN = dataStoreFactory(tag)
+	tagStoreUpperA = dataStoreFactory(tag)
+	tagStoreLowerA = dataStoreFactory(tag)
+	tagStoreUpperC = dataStoreFactory(tag)
+	tagStoreLowerC = dataStoreFactory(tag)
+
+	#Save this template into each list
+	tagList.append(tagStoreMASTER)
+	#Gender
+	maleList.append(tagStoreMALE)
+	femaleList.append(tagStoreFEMALE)
+	#Caller/Receiver
+	callerList.append(tagStoreCALLER)
+	receiverList.append(tagStoreRECEIVER)
+	#OENAC
+	upperOList.append(tagStoreUpperO)
+	lowerOList.append(tagStoreLowerO)
+	upperEList.append(tagStoreUpperO)
+	lowerEList.append(tagStoreLowerO)
+	upperNList.append(tagStoreUpperO)
+	lowerNList.append(tagStoreLowerO)
+	upperAList.append(tagStoreUpperO)
+	lowerAList.append(tagStoreLowerO)
+	upperCList.append(tagStoreUpperO)
+	lowerCList.append(tagStoreLowerO)
+
+tagFile.close()
+
+'''
+	> READ THE DATA IN FROM FILE
+	> ADD TO THE CREATED BINS
+'''
+
+fileNames = glob.glob("/Users/callumc/SpeechProject/Project/vocalizationcorpus/newData/extraction/gdata/*.gdata")
+
+#Keeps track of cycles for displaying percentage completed
+cycleCount = 0
+percentageStr = ""
+
+#Process a single file at a time
+#Splitting all extracted values at a time in nested loop
+for curFile in fileNames:
+	#Check if male or female
+	isMale = checkMembership(curFile[-12:-11], "F", 0)
+
+	#Caller/Receiver check
+	isCaller = checkMembership(curFile[-8:-7], "R", 0)
+
+	#Check if Olower/Oupper
+	isOUpper = checkMembership(curFile[-10:-7], OENACsort[0][1], 1)
+
+	#Check if Elower/Eupper
+	isEUpper = checkMembership(curFile[-10:-7], OENACsort[1][1], 1)
+
+	#Check if Nlower/Nupper
+	isNUpper = checkMembership(curFile[-10:-7], OENACsort[2][1], 1)
+
+	#Check if Alower/Aupper
+	isAUpper = checkMembership(curFile[-10:-7], OENACsort[3][1], 1)
+
+	#Check if Clower/Cupper
+	isCUpper = checkMembership(curFile[-10:-7], OENACsort[4][1], 1)
+
+	#Open the file
+	dataFile = open(curFile, 'r')
+	#Skip the first line (headers)
+	dataFile.readline()
+	i=0
+	while i < 62:
+		curLine = dataFile.readline()
+
+		if (curLine == ''):
+			break
+
+		curLine = curLine.split(',')
+		curLine[1] = curLine[1].rstrip('\n')
+
+		if curLine[1] == 'nan':
+			i = i + 1
+			continue
+
+		#split by e to calculate actual value
+		numberCalc = curLine[1].split('e')
+		numberCalc[0] = float(numberCalc[0])
+		numberCalc[1] = float(numberCalc[1])
+
+		calculatedPower = math.pow(10,numberCalc[1])
+		calculatedNumber = numberCalc[0]*calculatedPower
+
+		#Add to master list
+		tagList[i][1].append(calculatedNumber)
+
+		#Add to male/female list
+		dataToList(isMale, maleList[i][1], femaleList[i][1], calculatedNumber)
+
+		#Add to caller/receiver list
+		dataToList(isCaller, callerList[i][1], receiverList[i][1], calculatedNumber)
+
+		#Add to O upper/lower list
+		dataToList(isOUpper, upperOList[i][1], lowerOList[i][1], calculatedNumber)
+
+		#Add to E upper/lower list
+		dataToList(isEUpper, upperEList[i][1], lowerEList[i][1], calculatedNumber)
+
+		#Add to N upper/lower list
+		dataToList(isNUpper, upperNList[i][1], lowerNList[i][1], calculatedNumber)
+
+		#Add to A upper/lower list
+		dataToList(isAUpper, upperAList[i][1], lowerAList[i][1], calculatedNumber)
+
+		#Add to C upper/lower list
+		dataToList(isCUpper, upperCList[i][1], lowerCList[i][1], calculatedNumber)
+
+		i = i + 1
+
+	#Displaying progress
+	prevString = percentageStr
+	cycleCount += 1
+	percentageVal = (float(cycleCount) / 2771.0) * 100.0
+	percentageStr = str(round(percentageVal, 0))
+	if (prevString != percentageStr):
+		print percentageStr + "% processed."
+
+dataFile.close()
+
+'''
+	> COMMENCE THE LUI MENU
+'''
 
 mainMenu()
 exit()

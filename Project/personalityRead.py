@@ -75,37 +75,37 @@ def getOENAC():
 	#Deal with Openness
 	for entry in Ostorage:
 		if (entry[1] >= Omedian):
-			Oupper.append(entry)
+			Oupper.append(entry[0])
 		else:
-			Olower.append(entry)
+			Olower.append(entry[0])
 
 	#Deal with Extraversion
 	for entry in Estorage:
 		if (entry[1] >= Emedian):
-			Eupper.append(entry)
+			Eupper.append(entry[0])
 		else:
-			Elower.append(entry)
+			Elower.append(entry[0])
 
 	#Deal with Neuroticism
 	for entry in Nstorage:
 		if (entry[1] >= Nmedian):
-			Nupper.append(entry)
+			Nupper.append(entry[0])
 		else:
-			Nlower.append(entry)
+			Nlower.append(entry[0])
 
 	#Deal with Agreeableness
 	for entry in Astorage:
 		if (entry[1] >= Amedian):
-			Aupper.append(entry)
+			Aupper.append(entry[0])
 		else:
-			Alower.append(entry)
+			Alower.append(entry[0])
 
 	#Deal with Concientiousness
 	for entry in Cstorage:
 		if (entry[1] >= Cmedian):
-			Cupper.append(entry)
+			Cupper.append(entry[0])
 		else:
-			Clower.append(entry)
+			Clower.append(entry[0])
 
 	#Append these lists to the master lists for each of OENAC
 	Ofinal.append(Oupper)
