@@ -276,7 +276,9 @@ def createMasterCSV():
 
 	headerLine = 'extracted_feature, gender_anova_Fval, gender_anova_Pval, call-rece_anova_Fval, call-rece_anova_Pval, ' \
 					'O_anova_Fval, O_anova_Pval, E_anova_Fval, E_anova_Pval, N_anova_Fval, N_anova_Pval, ' \
-					'A_anova_Fval, A_anova_Pval, C_anova_Fval, C_anova_Pval'
+					'A_anova_Fval, A_anova_Pval, C_anova_Fval, C_anova_Pval, ConfC_anova_Fval, ConfC_anova_Pval, ' \
+					'ConfA_anova_Fval, ConfA_anova_Pval, ConfO_anova_Fval, ConfO_anova_Pval, ConfD_anova_Fval, ConfD_anova_Pval, ' \
+					'ConfI_anova_Fval, ConfI_anova_Pval'
 
 	headerLine += '\n'
 
@@ -351,6 +353,51 @@ def createMasterCSV():
 		if (signStr != ""):
 			lineOut += signStr
 
+		#Compromising
+		ConfCData = signStats(upperConfCList[i][1], lowerConfCList[i][1], tagList[i][1])
+		lineOut += ", " + str(ConfCData[0]) #Fval
+		lineOut += ", " + str(ConfCData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(ConfCData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Avoiding
+		ConfAData = signStats(upperConfAList[i][1], lowerConfAList[i][1], tagList[i][1])
+		lineOut += ", " + str(ConfAData[0]) #Fval
+		lineOut += ", " + str(ConfAData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(ConfAData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Obliging
+		ConfOData = signStats(upperConfOList[i][1], lowerConfOList[i][1], tagList[i][1])
+		lineOut += ", " + str(ConfOData[0]) #Fval
+		lineOut += ", " + str(ConfOData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(ConfOData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Dominating
+		ConfDData = signStats(upperConfDList[i][1], lowerConfDList[i][1], tagList[i][1])
+		lineOut += ", " + str(ConfDData[0]) #Fval
+		lineOut += ", " + str(ConfDData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(ConfDData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
+		#Compromising
+		ConfIData = signStats(upperConfIList[i][1], lowerConfIList[i][1], tagList[i][1])
+		lineOut += ", " + str(ConfIData[0]) #Fval
+		lineOut += ", " + str(ConfIData[1]) #Pval
+		#Check for significance
+		signStr = outputSignificance(ConfIData[1])
+		if (signStr != ""):
+			lineOut += signStr
+
 		#newline char
 		lineOut += '\n'
 
@@ -418,9 +465,23 @@ upperAList = []
 lowerAList = []
 upperCList = []
 lowerCList = []
+#CAODI
+upperConfCList = []
+lowerConfCList = []
+upperConfAList = []
+lowerConfAList = []
+upperConfOList = []
+lowerConfOList = []
+upperConfDList = []
+lowerConfDList = []
+upperConfIList = []
+lowerConfIList = []
 
 #Import Personality OENAC data from file using personalityRead.py
 OENACsort = pRead.getOENAC()
+
+#Import Conflict CAODI data from file using personalityRead.py
+CAODIsort = pRead.getCAODI()
 
 #Template for data storage
 for tag in tagFile:
@@ -444,6 +505,17 @@ for tag in tagFile:
 	tagStoreLowerA = dataStoreFactory(tag)
 	tagStoreUpperC = dataStoreFactory(tag)
 	tagStoreLowerC = dataStoreFactory(tag)
+	#CAODI
+	tagStoreUpperConfC = dataStoreFactory(tag)
+	tagStoreLowerConfC = dataStoreFactory(tag)
+	tagStoreUpperConfA = dataStoreFactory(tag)
+	tagStoreLowerConfA = dataStoreFactory(tag)
+	tagStoreUpperConfO = dataStoreFactory(tag)
+	tagStoreLowerConfO = dataStoreFactory(tag)
+	tagStoreUpperConfD = dataStoreFactory(tag)
+	tagStoreLowerConfD = dataStoreFactory(tag)
+	tagStoreUpperConfI = dataStoreFactory(tag)
+	tagStoreLowerConfI = dataStoreFactory(tag)
 
 	#Save this template into each list
 	tagList.append(tagStoreMASTER)
@@ -464,6 +536,18 @@ for tag in tagFile:
 	lowerAList.append(tagStoreLowerO)
 	upperCList.append(tagStoreUpperO)
 	lowerCList.append(tagStoreLowerO)
+	#CAODI
+	upperConfCList.append(tagStoreUpperConfC)
+	lowerConfCList.append(tagStoreLowerConfC)
+	upperConfAList.append(tagStoreUpperConfA)
+	lowerConfAList.append(tagStoreLowerConfA)
+	upperConfOList.append(tagStoreUpperConfO)
+	lowerConfOList.append(tagStoreLowerConfO)
+	upperConfDList.append(tagStoreUpperConfD)
+	lowerConfDList.append(tagStoreLowerConfD)
+	upperConfIList.append(tagStoreUpperConfI)
+	lowerConfIList.append(tagStoreLowerConfI)
+	
 
 tagFile.close()
 
@@ -501,6 +585,21 @@ for curFile in fileNames:
 
 	#Check if Clower/Cupper
 	isCUpper = checkMembership(curFile[-10:-7], OENACsort[4][1], 1)
+
+	#Check if ConfClower/ConfCupper
+	isConfCUpper = checkMembership(curFile[-10:-7], CAODIsort[0][1], 1)
+
+	#Check if ConfClower/ConfCupper
+	isConfAUpper = checkMembership(curFile[-10:-7], CAODIsort[1][1], 1)
+
+	#Check if ConfClower/ConfCupper
+	isConfOUpper = checkMembership(curFile[-10:-7], CAODIsort[2][1], 1)
+
+	#Check if ConfClower/ConfCupper
+	isConfDUpper = checkMembership(curFile[-10:-7], CAODIsort[3][1], 1)
+
+	#Check if ConfClower/ConfCupper
+	isConfIUpper = checkMembership(curFile[-10:-7], CAODIsort[4][1], 1)
 
 	#Open the file
 	dataFile = open(curFile, 'r')
@@ -551,6 +650,21 @@ for curFile in fileNames:
 
 		#Add to C upper/lower list
 		dataToList(isCUpper, upperCList[i][1], lowerCList[i][1], calculatedNumber)
+
+		#Add to ConfC upper/lower list
+		dataToList(isConfCUpper, upperConfCList[i][1], lowerConfCList[i][1], calculatedNumber)
+
+		#Add to ConfA upper/lower list
+		dataToList(isConfAUpper, upperConfAList[i][1], lowerConfAList[i][1], calculatedNumber)
+
+		#Add to ConfO upper/lower list
+		dataToList(isConfOUpper, upperConfOList[i][1], lowerConfOList[i][1], calculatedNumber)
+
+		#Add to ConfD upper/lower list
+		dataToList(isConfDUpper, upperConfDList[i][1], lowerConfDList[i][1], calculatedNumber)
+
+		#Add to ConfI upper/lower list
+		dataToList(isConfIUpper, upperConfIList[i][1], lowerConfIList[i][1], calculatedNumber)
 
 		i = i + 1
 

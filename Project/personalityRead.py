@@ -12,126 +12,135 @@ def formatID(oldID):
 	newID = oldID[1:3] + oldID[4]
 	return newID
 
-def getOENAC():
-	#Create storage lists in order they appear in csv file
-	#Raw storage for easy working with the median
-	Ostorage = [] 
-	Oraw = []
-	Estorage = [] 
-	Eraw = []
-	Nstorage = [] 
-	Nraw = []
-	Astorage = [] 
-	Araw = []
-	Cstorage = [] 
-	Craw = []
+def fileRead(fileName, startPos):
+	#create 5 storage lists
+	#raw storage is used when working out the median value
+	aStorage = []
+	aRaw = []
+	bStorage = []
+	bRaw = []
+	cStorage = []
+	cRaw = []
+	dStorage = []
+	dRaw = []
+	eStorage = []
+	eRaw = []
 
-	#Read the csv files into python lists
-	csvfile = open('q_personality.csv', 'rb')
+	csvfile = open(fileName, 'rb')
 	reader = csv.reader(csvfile)
 	next(reader,)
 	for row in reader:
-		#Reformat the tag
-	    tag = formatID(row[0])
-	    #Add the data and tag to each list
-	    Ostorage.append([tag, int(row[11])])
-	    Estorage.append([tag, int(row[12])])
-	    Nstorage.append([tag, int(row[13])])
-	    Astorage.append([tag, int(row[14])])
-	    Cstorage.append([tag, int(row[15])])
-	    #Add to the raw storage
-	    Oraw.append(int(row[11]))
-	    Eraw.append(int(row[12]))
-	    Nraw.append(int(row[13]))
-	    Araw.append(int(row[14]))
-	    Craw.append(int(row[15]))
+		#reformat the tag
+		tag = formatID(row[0])
+		#add the data and tag to each list
+		aStorage.append([tag, int(row[startPos])])
+		bStorage.append([tag, int(row[startPos+1])])
+		cStorage.append([tag, int(row[startPos+2])])
+		dStorage.append([tag, int(row[startPos+3])])
+		eStorage.append([tag, int(row[startPos+4])])
+		#add to the raw storage
+		aRaw.append(int(row[startPos]))
+		bRaw.append(int(row[startPos+1]))
+		cRaw.append(int(row[startPos+2]))
+		dRaw.append(int(row[startPos+3]))
+		eRaw.append(int(row[startPos+4]))
 
 	csvfile.close()
 
-	#Find median of each list
-	Omedian = np.median(Oraw)
-	Emedian = np.median(Eraw)
-	Nmedian = np.median(Nraw)
-	Amedian = np.median(Araw)
-	Cmedian = np.median(Craw)
+	#find median of each list
+	aMedian = np.median(aRaw)
+	bMedian = np.median(bRaw)
+	cMedian = np.median(cRaw)
+	dMedian = np.median(dRaw)
+	eMedian = np.median(eRaw)
 
-	#Create (upper,lower) & upper & lower
-	Ofinal = []
-	Oupper = []
-	Olower = []
-	Efinal = []
-	Eupper = []
-	Elower = []
-	Nfinal = []
-	Nupper = []
-	Nlower = []
-	Afinal = []
-	Aupper = []
-	Alower = []
-	Cfinal = []
-	Cupper = []
-	Clower = []
+	#create (upper,lower) & upper & lower
+	aFinal = []
+	aUpper = []
+	aLower = []
+	bFinal = []
+	bUpper = []
+	bLower = []
+	cFinal = []
+	cUpper = []
+	cLower = []
+	dFinal = []
+	dUpper = []
+	dLower = []
+	eFinal = []
+	eUpper = []
+	eLower = []
 
-	#Deal with Openness
-	for entry in Ostorage:
-		if (entry[1] >= Omedian):
-			Oupper.append(entry[0])
+	#Deal with A
+	for entry in aStorage:
+		if (entry[1] >= aMedian):
+			aUpper.append(entry[0])
 		else:
-			Olower.append(entry[0])
+			aLower.append(entry[0])
 
-	#Deal with Extraversion
-	for entry in Estorage:
-		if (entry[1] >= Emedian):
-			Eupper.append(entry[0])
+	#Deal with B
+	for entry in bStorage:
+		if (entry[1] >= bMedian):
+			bUpper.append(entry[0])
 		else:
-			Elower.append(entry[0])
+			bLower.append(entry[0])
 
-	#Deal with Neuroticism
-	for entry in Nstorage:
-		if (entry[1] >= Nmedian):
-			Nupper.append(entry[0])
+	#Deal with C
+	for entry in cStorage:
+		if (entry[1] >= cMedian):
+			cUpper.append(entry[0])
 		else:
-			Nlower.append(entry[0])
+			cLower.append(entry[0])
 
-	#Deal with Agreeableness
-	for entry in Astorage:
-		if (entry[1] >= Amedian):
-			Aupper.append(entry[0])
+	#Deal with D
+	for entry in dStorage:
+		if (entry[1] >= dMedian):
+			dUpper.append(entry[0])
 		else:
-			Alower.append(entry[0])
+			dLower.append(entry[0])
 
-	#Deal with Concientiousness
-	for entry in Cstorage:
-		if (entry[1] >= Cmedian):
-			Cupper.append(entry[0])
+	#Deal with E
+	for entry in eStorage:
+		if (entry[1] >= eMedian):
+			eUpper.append(entry[0])
 		else:
-			Clower.append(entry[0])
+			eLower.append(entry[0])
 
-	#Append these lists to the master lists for each of OENAC
-	Ofinal.append(Oupper)
-	Ofinal.append(Olower)
-	Efinal.append(Eupper)
-	Efinal.append(Elower)
-	Nfinal.append(Nupper)
-	Nfinal.append(Nlower)
-	Afinal.append(Aupper)
-	Afinal.append(Alower)
-	Cfinal.append(Cupper)
-	Cfinal.append(Clower)
+	#append these lists to the master lists
+	aFinal.append(aUpper)
+	aFinal.append(aLower)
+	bFinal.append(bUpper)
+	bFinal.append(bLower)
+	cFinal.append(cUpper)
+	cFinal.append(cLower)
+	dFinal.append(dUpper)
+	dFinal.append(dLower)
+	eFinal.append(eUpper)
+	eFinal.append(eLower)
 
-	#Create master list for returning
-	OENACmaster = []
+	#create master list for returning
+	masterList = []
 
-	#Add the final lists to the master
-	OENACmaster.append(Ofinal)
-	OENACmaster.append(Efinal)
-	OENACmaster.append(Nfinal)
-	OENACmaster.append(Afinal)
-	OENACmaster.append(Cfinal)
+	#add the final lists to the master
+	masterList.append(aFinal)
+	masterList.append(bFinal)
+	masterList.append(cFinal)
+	masterList.append(dFinal)
+	masterList.append(eFinal)
 
-	return OENACmaster
+	return masterList
+	
+def getOENAC():
 
+	OENAClist = fileRead('q_personality.csv', 11)
 
+	return OENAClist
+
+def getCAODI():
+
+	CAODIlist = fileRead('q_conflict.csv', 36)
+
+	return CAODIlist
 
 
 
