@@ -528,14 +528,14 @@ for tag in tagFile:
 	#OENAC
 	upperOList.append(tagStoreUpperO)
 	lowerOList.append(tagStoreLowerO)
-	upperEList.append(tagStoreUpperO)
-	lowerEList.append(tagStoreLowerO)
-	upperNList.append(tagStoreUpperO)
-	lowerNList.append(tagStoreLowerO)
-	upperAList.append(tagStoreUpperO)
-	lowerAList.append(tagStoreLowerO)
-	upperCList.append(tagStoreUpperO)
-	lowerCList.append(tagStoreLowerO)
+	upperEList.append(tagStoreUpperE)
+	lowerEList.append(tagStoreLowerE)
+	upperNList.append(tagStoreUpperN)
+	lowerNList.append(tagStoreLowerN)
+	upperAList.append(tagStoreUpperA)
+	lowerAList.append(tagStoreLowerA)
+	upperCList.append(tagStoreUpperC)
+	lowerCList.append(tagStoreLowerC)
 	#CAODI
 	upperConfCList.append(tagStoreUpperConfC)
 	lowerConfCList.append(tagStoreLowerConfC)
@@ -681,6 +681,8 @@ dataFile.close()
 '''
 	> COMMENCE THE LUI MENU
 '''
-
+print (upperOList == upperEList)
 mainMenu()
 exit()
+
+
