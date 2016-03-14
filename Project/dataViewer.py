@@ -441,6 +441,26 @@ def dataToList(isMember, locA, locB, num):
 
 	return
 
+#Test fn for min/max finding of filenames
+def myMinMax(curList):
+	#Set min/max to the first elements of the list
+	themin = curList[0][1]
+	themax = curList[0][1]
+	minEntry = curList[0]
+	maxEntry = curList[0]
+
+	for entry in curList:
+		if (entry[1] < themin):
+			themin = entry[1]
+			minEntry = entry
+
+		elif (entry[1] > themax):
+			themax = entry[1]
+			maxEntry = entry
+
+	print minEntry
+	print maxEntry
+
 '''
 START:	> READ TAG FILE TO OBTAIN FEATURE NAMES
 		> CREATE DATA STORAGE BINS FOR EACH ANALYSIS CASE
@@ -562,6 +582,9 @@ fileNames = glob.glob("/Users/callumc/SpeechProject/Project/vocalizationcorpus/n
 cycleCount = 0
 percentageStr = ""
 
+#Min/Max find test code
+minmaxList = []
+
 #Process a single file at a time
 #Splitting all extracted values at a time in nested loop
 for curFile in fileNames:
@@ -627,6 +650,16 @@ for curFile in fileNames:
 		calculatedPower = math.pow(10,numberCalc[1])
 		calculatedNumber = numberCalc[0]*calculatedPower
 
+		'''TEMP CODE FOR FINDING MINS AND MAXIMUMS WITHOUT
+		   HAVING TO REDESIGN THE WHOLE CODE'''
+
+		#Add things here to the temp list
+		#Change 0 to the feature number to min/max find
+		if (i == 1):
+			minmaxList.append([curFile, calculatedNumber])
+
+		''' --- END TEST CODE --- '''
+
 		#Add to master list
 		tagList[i][1].append(calculatedNumber)
 
@@ -676,12 +709,14 @@ for curFile in fileNames:
 	if (prevString != percentageStr):
 		print percentageStr + "% processed."
 
+#MaxMinWorkoutTestCodeHere
+myMinMax(minmaxList)
+
 dataFile.close()
 
 '''
 	> COMMENCE THE LUI MENU
 '''
-print (upperOList == upperEList)
 mainMenu()
 exit()
 
