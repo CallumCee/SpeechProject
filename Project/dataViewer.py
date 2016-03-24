@@ -93,6 +93,8 @@ def advFeatureChoice(graphNumber):
 	print "Type 'female' to display only data from female participants"
 	print "Type 'caller' to display data from caller participants"
 	print "Type 'receiver' to display data from receiver participants"
+	print "Type 'ocean' to display data from OCEAN paritcipants"
+	print "Type 'caodi' to display data from CAODI participants"
 	userChoiceDataSet = raw_input("#")
 
 	userChoiceFunction = ""
@@ -111,6 +113,95 @@ def advFeatureChoice(graphNumber):
 
 	mainMenu()
 	return
+#Selects the correct CAODI quadrant
+def caodiChooser(gNum):
+	upperlowerSelectText = "Please select if you would like the upper quadrant, the lower or both. Use (u, l, b)"
+	print "Type the letter of the CAODI trait to be used. Use (c, a, o, d, i)"
+
+	traitChoice = raw_input("#")
+	print upperlowerSelectText
+	quadChoice = raw_input("#")
+
+	#upper quad (median and above)
+	if (quadChoice == "u"):
+		if (traitChoice == "c"):
+			return upperConfCList[gNum]
+		elif (traitChoice == "a"):
+			return upperConfAList[gNum]
+		elif (traitChoice == "o"):
+			return upperConfOList[gNum]
+		elif (traitChoice == "d"):
+			return upperConfDList[gNum]
+		elif (traitChoice == "i"):
+			return upperConfIList[gNum]
+	#lower quad (below median)
+	elif (quadChoice == "l"):
+		if (traitChoice == "c"):
+			return lowerConfCList[gNum]
+		elif (traitChoice == "a"):
+			return lowerConfAList[gNum]
+		elif (traitChoice == "o"):
+			return lowerConfOList[gNum]
+		elif (traitChoice == "d"):
+			return lowerConfDList[gNum]
+		elif (traitChoice == "i"):
+			return lowerConfIList[gNum]
+	elif (quadChoice == "b"):
+		if (traitChoice == "c"):
+			return upperConfCList[gNum] + lowerConfCList[gNum]
+		elif (traitChoice == "a"):
+			return upperConfAList[gNum] + lowerConfAList[gNum]
+		elif (traitChoice == "o"):
+			return upperConfOList[gNum] + lowerConfOList[gNum]
+		elif (traitChoice == "d"):
+			return upperConfDList[gNum] + lowerConfDList[gNum]
+		elif (traitChoice == "i"):
+			return upperConfIList[gNum] + lowerConfIList[gNum]
+
+#Selects the correct OCEAN quadrant
+def oceanChooser(gNum):
+	upperlowerSelectText = "Please select if you would like the upper quadrant, the lower or both. Use (u, l, b)"
+	print "Type the letter of the OCEAN trait to be used. Use (o, c, e, a, n)"
+
+	traitChoice = raw_input("#")
+	print upperlowerSelectText
+	quadChoice = raw_input("#")
+
+	#upper quad (median and above)
+	if (quadChoice == "u"):
+		if (traitChoice == "o"):
+			return upperOList[gNum]
+		elif (traitChoice == "c"):
+			return upperCList[gNum]
+		elif (traitChoice == "e"):
+			return upperEList[gNum]
+		elif (traitChoice == "a"):
+			return upperAList[gNum]
+		elif (traitChoice == "n"):
+			return upperNList[gNum]
+	#lower quad (below median)
+	elif (quadChoice == "l"):
+		if (traitChoice == "o"):
+			return lowerOList[gNum]
+		elif (traitChoice == "c"):
+			return lowerCList[gNum]
+		elif (traitChoice == "e"):
+			return lowerEList[gNum]
+		elif (traitChoice == "a"):
+			return lowerAList[gNum]
+		elif (traitChoice == "n"):
+			return lowerNList[gNum]
+	elif (quadChoice == "b"):
+		if (traitChoice == "o"):
+			return upperOList[gNum] + lowerOList[gNum]
+		elif (traitChoice == "c"):
+			return upperCList[gNum] + lowerCList[gNum]
+		elif (traitChoice == "e"):
+			return upperEList[gNum] + lowerEList[gNum]
+		elif (traitChoice == "a"):
+			return upperAList[gNum] + lowerAList[gNum]
+		elif (traitChoice == "n"):
+			return upperNList[gNum] + lowerNList[gNum]
 
 #Creates the histogram to display
 def drawHist(graphNumber, dataChoice):
@@ -128,6 +219,10 @@ def drawHist(graphNumber, dataChoice):
 	elif dataChoice == "receiver":
 		graphData = receiverList[graphNumber]
 		print 'Receiver data selected'
+	elif dataChoice == "ocean":
+		graphData = oceanChooser(graphNumber)
+	elif dataChoice == "caodi":
+		graphData = caodiChooser(graphNumber)
 	else:
 		graphData = tagList[graphNumber]
 		print 'All data selected'
@@ -650,12 +745,12 @@ for curFile in fileNames:
 		calculatedPower = math.pow(10,numberCalc[1])
 		calculatedNumber = numberCalc[0]*calculatedPower
 
-		'''TEMP CODE FOR FINDING MINS AND MAXIMUMS WITHOUT
-		   HAVING TO REDESIGN THE WHOLE CODE'''
+		'''TEMP CODE FOR FINDING MINS AND MAXIMUMS FILES FOR EACH FEAT
+			 WITHOUT HAVING TO REDESIGN THE WHOLE CODE'''
 
 		#Add things here to the temp list
 		#Change 0 to the feature number to min/max find
-		if (i == 1):
+		if (i == 22):
 			minmaxList.append([curFile, calculatedNumber])
 
 		''' --- END TEST CODE --- '''
@@ -709,8 +804,8 @@ for curFile in fileNames:
 	if (prevString != percentageStr):
 		print percentageStr + "% processed."
 
-#MaxMinWorkoutTestCodeHere
-myMinMax(minmaxList)
+#MaxMinWorkout Code - Comment out if min/max find is not needed
+#myMinMax(minmaxList)
 
 dataFile.close()
 
