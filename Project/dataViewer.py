@@ -271,6 +271,12 @@ def basicStats(graphNumber, dataChoice):
 	elif dataChoice == "receiver":
 		graphData = receiverList[graphNumber]
 		stringTitle = "Receiver Data"
+	elif dataChoice == "ocean":
+		stringTitle = "OCEAN Data"
+		graphData = oceanChooser(graphNumber)
+	elif dataChoice == "caodi":
+		stringTitle = "CAODI Data"
+		graphData = caodiChooser(graphNumber)
 	else:
 		graphData = tagList[graphNumber]
 		stringTitle = "All Data"
