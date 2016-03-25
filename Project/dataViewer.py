@@ -170,41 +170,44 @@ def oceanChooser(gNum):
 	#upper quad (median and above)
 	if (quadChoice == "u"):
 		if (traitChoice == "o"):
-			return upperOList[gNum]
+			return [upperOList[gNum],0]
 		elif (traitChoice == "c"):
-			return upperCList[gNum]
+			return [upperCList[gNum],0]
 		elif (traitChoice == "e"):
-			return upperEList[gNum]
+			return [upperEList[gNum],0]
 		elif (traitChoice == "a"):
-			return upperAList[gNum]
+			return [upperAList[gNum],0]
 		elif (traitChoice == "n"):
-			return upperNList[gNum]
+			return [upperNList[gNum],0]
 	#lower quad (below median)
 	elif (quadChoice == "l"):
 		if (traitChoice == "o"):
-			return lowerOList[gNum]
+			return [lowerOList[gNum],0]
 		elif (traitChoice == "c"):
-			return lowerCList[gNum]
+			return [lowerCList[gNum],0]
 		elif (traitChoice == "e"):
-			return lowerEList[gNum]
+			return [lowerEList[gNum],0]
 		elif (traitChoice == "a"):
-			return lowerAList[gNum]
+			return [lowerAList[gNum],0]
 		elif (traitChoice == "n"):
-			return lowerNList[gNum]
+			return [lowerNList[gNum],0]
 	elif (quadChoice == "b"):
 		if (traitChoice == "o"):
-			return upperOList[gNum] + lowerOList[gNum]
+			return [upperOList[gNum], lowerOList[gNum]]
 		elif (traitChoice == "c"):
-			return upperCList[gNum] + lowerCList[gNum]
+			return [upperCList[gNum], lowerCList[gNum]]
 		elif (traitChoice == "e"):
-			return upperEList[gNum] + lowerEList[gNum]
+			return [upperEList[gNum], lowerEList[gNum]]
 		elif (traitChoice == "a"):
-			return upperAList[gNum] + lowerAList[gNum]
+			return [upperAList[gNum], lowerAList[gNum]]
 		elif (traitChoice == "n"):
-			return upperNList[gNum] + lowerNList[gNum]
+			return [upperNList[gNum], lowerNList[gNum]]
 
 #Creates the histogram to display
 def drawHist(graphNumber, dataChoice):
+
+	#If two graphs will be on top of each other- set to True
+	overlap = False
 
 	#data
 	if dataChoice == "male":
@@ -221,17 +224,20 @@ def drawHist(graphNumber, dataChoice):
 		print 'Receiver data selected'
 	elif dataChoice == "ocean":
 		graphData = oceanChooser(graphNumber)
+		if (graphData[1] == 0):
+			graphData = graphData[0]
+		else:
+			overlap = True
 	elif dataChoice == "caodi":
 		graphData = caodiChooser(graphNumber)
+		if (graphData[1] == 0):
+			graphData = graphData[0]
+		else:
+			overlap = True
 	else:
 		graphData = tagList[graphNumber]
 		print 'All data selected'
 
-
-	# mean of distribution
-	mu = sum(graphData[1]) / float(len(graphData[1]))
-	# standard deviation of distribution
-	sigma = numpy.std(graphData[1])
 
 	#Standard number of bins for datapyt
 	num_bins = 50
@@ -243,12 +249,21 @@ def drawHist(graphNumber, dataChoice):
 	elif bin_choice == 'less':
 		num_bins = num_bins / 2
 
-	# the histogram of the data
-	plt.hist(graphData[1], num_bins, facecolor='green', alpha=0.5)
 
-	plt.xlabel('Value of ' + graphData[0])
-	plt.ylabel('Frequency')
-	plt.title('Histogram of ' + graphData[0])
+	if (overlap == True):
+		#upper
+		plt.hist(graphData[0][1], num_bins, facecolor='green', alpha=0.5, label='upper')
+		#lower
+		plt.hist(graphData[1][1], num_bins, facecolor='blue', alpha=0.5, label='lower')
+		plt.xlabel('Value of ' + graphData[0][0])
+		plt.ylabel('Frequency')
+		plt.title('Histogram of ' + graphData[0][0])
+	else:
+		# the histogram of the data
+		plt.hist(graphData[1], num_bins, facecolor='green', alpha=0.5)
+		plt.xlabel('Value of ' + graphData[0])
+		plt.ylabel('Frequency')
+		plt.title('Histogram of ' + graphData[0])
 
 	# Tweak spacing to prevent clipping of ylabel
 	plt.subplots_adjust(left=0.15)
