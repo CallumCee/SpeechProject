@@ -125,38 +125,38 @@ def caodiChooser(gNum):
 	#upper quad (median and above)
 	if (quadChoice == "u"):
 		if (traitChoice == "c"):
-			return upperConfCList[gNum]
+			return [upperConfCList[gNum],0]
 		elif (traitChoice == "a"):
-			return upperConfAList[gNum]
+			return [upperConfAList[gNum],0]
 		elif (traitChoice == "o"):
-			return upperConfOList[gNum]
+			return [upperConfOList[gNum],0]
 		elif (traitChoice == "d"):
-			return upperConfDList[gNum]
+			return [upperConfDList[gNum],0]
 		elif (traitChoice == "i"):
-			return upperConfIList[gNum]
+			return [upperConfIList[gNum],0]
 	#lower quad (below median)
 	elif (quadChoice == "l"):
 		if (traitChoice == "c"):
-			return lowerConfCList[gNum]
+			return [lowerConfCList[gNum],0]
 		elif (traitChoice == "a"):
-			return lowerConfAList[gNum]
+			return [lowerConfAList[gNum],0]
 		elif (traitChoice == "o"):
-			return lowerConfOList[gNum]
+			return [lowerConfOList[gNum],0]
 		elif (traitChoice == "d"):
-			return lowerConfDList[gNum]
+			return [lowerConfDList[gNum],0]
 		elif (traitChoice == "i"):
-			return lowerConfIList[gNum]
+			return [lowerConfIList[gNum],0]
 	elif (quadChoice == "b"):
 		if (traitChoice == "c"):
-			return upperConfCList[gNum] + lowerConfCList[gNum]
+			return [upperConfCList[gNum], lowerConfCList[gNum]]
 		elif (traitChoice == "a"):
-			return upperConfAList[gNum] + lowerConfAList[gNum]
+			return [upperConfAList[gNum], lowerConfAList[gNum]]
 		elif (traitChoice == "o"):
-			return upperConfOList[gNum] + lowerConfOList[gNum]
+			return [upperConfOList[gNum], lowerConfOList[gNum]]
 		elif (traitChoice == "d"):
-			return upperConfDList[gNum] + lowerConfDList[gNum]
+			return [upperConfDList[gNum], lowerConfDList[gNum]]
 		elif (traitChoice == "i"):
-			return upperConfIList[gNum] + lowerConfIList[gNum]
+			return [upperConfIList[gNum], lowerConfIList[gNum]]
 
 #Selects the correct OCEAN quadrant
 def oceanChooser(gNum):
