@@ -258,6 +258,7 @@ def drawHist(graphNumber, dataChoice):
 		plt.xlabel('Value of ' + graphData[0][0])
 		plt.ylabel('Frequency')
 		plt.title('Histogram of ' + graphData[0][0])
+		plt.legend(loc='upper right')
 	else:
 		# the histogram of the data
 		plt.hist(graphData[1], num_bins, facecolor='green', alpha=0.5)
